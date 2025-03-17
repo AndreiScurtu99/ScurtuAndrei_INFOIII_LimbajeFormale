@@ -1,0 +1,83 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+
+class Parcare {
+private:
+    vector<bool> locuri;
+    int nrLocuri;
+
+public:
+    Parcare(int n) : nrLocuri(n) {
+        locuri.resize(n, false);
+    }
+
+    void status() {
+        cout << "Starea parcarii: ";
+        for (int i = 0; i < nrLocuri; ++i) {
+            cout << (locuri[i] ? "[O] " : "[L] ");
+        }
+        cout << endl;
+    }
+
+    bool parkCar(int index) {
+        if (index < 0 || index >= nrLocuri) {
+            cout << "Loc invalid!\n";
+            return false;
+        }
+        if (locuri[index]) {
+            cout << "Loc deja ocupat!\n";
+            return false;
+        }
+        locuri[index] = true;
+        cout << "Masina a fost parcata la locul " << index + 1 << "\n";
+        return true;
+    }
+
+    bool leaveSpot(int index) {
+        if (index < 0 || index >= nrLocuri) {
+            cout << "Loc invalid!\n";
+            return false;
+        }
+        if (!locuri[index]) {
+            cout << "Loc deja liber!\n";
+            return false;
+        }
+        locuri[index] = false;
+        cout << "Masina a parasit parcarea " << index + 1 << "\n";
+        return true;
+    }
+};
+
+int main() {
+    int n, option, index;
+    cout << "Introduceti numarul de locuri de parcare: ";
+    cin >> n;
+    Parcare lot(n);
+
+    while (true) {
+        cout << "\n1. Vezi status\n2. Parcheaza masina\n3. Pleaca din parcare\n4. Iesire\nAlegeti o optiune: ";
+        cin >> option;
+
+        switch (option) {
+        case 1:
+            lot.status();
+            break;
+        case 2:
+            cout << "Unde parcam: ";
+            cin >> index;
+            lot.parkCar(index - 1);
+            break;
+        case 3:
+            cout << "De pe ce loc plecam: ";
+            cin >> index;
+            lot.leaveSpot(index - 1);
+            break;
+        case 4:
+            cout << "Iesire...\n";
+            return 0;
+        default:
+            cout << "Optiune invalida!\n";
+        }
+    }
+}

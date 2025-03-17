@@ -1,0 +1,58 @@
+#include <iostream>
+#include <unordered_map>
+using namespace std;
+
+class AutomatFinit {
+private:
+    string stare_curenta;
+    unordered_map<string, unordered_map<char, string>> tranzitii;
+    string stare_finala = "q4";
+
+public:
+    AutomatFinit() {
+        stare_curenta = "q0";
+        tranzitii["q0"]['C'] = "q1";
+        tranzitii["q0"]['T'] = "q2";
+        tranzitii["q0"]['A'] = "q3";
+        tranzitii["q0"]['H'] = "q4";
+        tranzitii["q1"]['K'] = "q4";
+        tranzitii["q2"]['K'] = "q4";
+        tranzitii["q3"]['K'] = "q4";
+        tranzitii["q4"]['K'] = "q0";
+
+    }
+
+    void procesare(char caracter) {
+        if (tranzitii[stare_curenta].find(caracter) != tranzitii[stare_curenta].end()) {
+            cout << "Din " << stare_curenta << " trece in " << tranzitii[stare_curenta][caracter] << endl;
+            stare_curenta = tranzitii[stare_curenta][caracter];
+
+        }
+        else {
+            //stare_curenta = "q0";
+        }
+    }
+
+    bool esteAcceptat() {
+        return stare_curenta == stare_finala;
+    }
+};
+
+int main() {
+    AutomatFinit automat;
+    string input;
+    cout << "Sir : ";
+    cin >> input;
+
+    for (char c : input) {
+        automat.procesare(c);
+    }
+
+    if (automat.esteAcceptat()) {
+        cout << "Sir acceptat." << endl;
+    }
+    else {
+        cout << "Sirul NU este acceptat." << endl;
+    }
+    return 0;
+}

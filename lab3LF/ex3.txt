@@ -1,0 +1,86 @@
+#include <iostream>
+#include <vector>
+#include <set>
+#include <map>
+#include <queue>
+
+using namespace std;
+
+class NFAtoDFA {
+private:
+    int numStates;
+    set<int> finalStates;
+    map<pair<int, char>, set<int>> transitions;
+
+public:
+    NFAtoDFA(int states) : numStates(states) {}
+
+    void addTransition(int from, char symbol, int to) {
+        transitions[{from, symbol}].insert(to);
+    }
+
+    void addFinalState(int state) {
+        finalStates.insert(state);
+    }
+
+    void convertToDFA() {
+        map<set<int>, int> dfaStates;
+        queue<set<int>> stateQueue;
+        vector<map<char, int>> dfaTransitions;
+        set<int> startState = {0};
+
+        stateQueue.push(startState);
+        dfaStates[startState] = 0;
+        dfaTransitions.emplace_back();
+
+        while (!stateQueue.empty()) {
+            set<int> currentState = stateQueue.front();
+            stateQueue.pop();
+            int dfaStateIndex = dfaStates[currentState];
+
+            map<char, set<int>> newTransitions;
+            for (int state : currentState) {
+                for (char symbol : {'0', '1', '2'}) {
+                    if (transitions.find({state, symbol}) != transitions.end()) {
+                        newTransitions[symbol].insert(transitions[{state, symbol}].begin(), transitions[{state, symbol}].end());
+                    }
+                }
+            }
+
+            for (const auto &entry : newTransitions) {
+                char symbol = entry.first;
+                set<int> newState = entry.second;
+                if (dfaStates.find(newState) == dfaStates.end()) {
+                    int newStateIndex = dfaStates.size();
+                    dfaStates[newState] = newStateIndex;
+                    dfaTransitions.emplace_back();
+                    stateQueue.push(newState);
+                }
+                dfaTransitions[dfaStateIndex][symbol] = dfaStates[newState];
+            }
+        }
+
+        cout << "DFA States and Transitions:\n";
+        for (size_t i = 0; i < dfaTransitions.size(); i++) {
+            cout << "State " << i << ": ";
+            for (const auto &t : dfaTransitions[i]) {
+                cout << "On " << t.first << " -> State " << t.second << " | ";
+            }
+            cout << "\n";
+        }
+    }
+};
+
+int main() {
+    NFAtoDFA nfa(3);
+    nfa.addTransition(0, '0', 0);
+    nfa.addTransition(0, '1', 1);
+    nfa.addTransition(1, '1', 1);
+    nfa.addTransition(1, '2', 2);
+    nfa.addTransition(2, '2', 2);
+    nfa.addTransition(0, '2', 2);
+    nfa.addFinalState(2);
+
+    nfa.convertToDFA();
+    return 0;
+}
