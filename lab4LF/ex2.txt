@@ -1,0 +1,37 @@
+#include <iostream>
+#include <map>
+using namespace std;
+
+enum State { S1, S2 };
+
+map<State, string> output = {
+    {S1, "O1"},
+    {S2, "O2"}
+};
+
+State transition(State current, char input) {
+    if (current == S1) {
+        return (input == 'A') ? S1 : S2;
+    }
+    else {
+        return (input == 'A') ? S1 : S2;
+    }
+}
+
+int main() {
+    string inputString;
+    cout << "Sir: (A/B): ";
+    cin >> inputString;
+
+    State currentState = S1;
+    cout << "Stare initiala: S1, Output: " << output[currentState] << endl;
+
+    for (char input : inputString) {
+        currentState = transition(currentState, input);
+        cout << "Input: " << input << " -> stare noua: "
+            << (currentState == S1 ? "S1" : "S2")
+            << ", Output: " << output[currentState] << endl;
+    }
+
+    return 0;
+}

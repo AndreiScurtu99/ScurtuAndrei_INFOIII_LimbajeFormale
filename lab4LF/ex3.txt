@@ -1,0 +1,43 @@
+#include <iostream>
+#include <map>
+using namespace std;
+
+
+enum State { Q1, Q2 };
+
+
+struct Transition {
+    State nextState;
+    string output;
+};
+
+
+map<pair<State, char>, Transition> transitionTable = {
+    {{Q1, 'X'}, {Q2, "O1"}},
+    {{Q1, 'Y'}, {Q1, "O1"}},
+    {{Q2, 'X'}, {Q1, "O2"}},
+    {{Q2, 'Y'}, {Q2, "O2"}}
+};
+
+int main() {
+    string inputString;
+    cout << "Sir (X/Y): ";
+    cin >> inputString;
+
+    State currentState = Q1;
+
+    for (char input : inputString) {
+        if (transitionTable.find({ currentState, input }) != transitionTable.end()) {
+            Transition t = transitionTable[{currentState, input}];
+            cout << "Input: " << input << ", stare: " << (currentState == Q1 ? "Q1" : "Q2")
+                << " -> starea urmatoare: " << (t.nextState == Q1 ? "Q1" : "Q2")
+                << ", Output: " << t.output << endl;
+            currentState = t.nextState;
+        }
+        else {
+            cout << "Sir gresit: " << input << endl;
+        }
+    }
+
+    return 0;
+}

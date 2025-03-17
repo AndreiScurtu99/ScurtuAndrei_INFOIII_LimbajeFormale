@@ -1,0 +1,69 @@
+#include <iostream>
+#include <vector>
+#include <map>
+#include <set>
+using namespace std;
+
+
+enum State { q0, q1, q2, q3, q4 };
+
+
+map<State, map<char, set<State>>> transitions = {
+    {q0, {{'a', {q1}}}},
+    {q1, {{'a', {q1}}, {'b', {q1}}, {'e', {q2}}}},
+    {q2, {{'a', {q3}}, {'b', {q3}}, {'e', {q3}}}},
+    {q3, {{'a', {q3}}, {'e', {q4}}}},
+    {q4, {}}
+};
+
+
+void epsilonClosure(set<State>& currentStates) {
+    set<State> closure = currentStates;
+    bool changed;
+    do {
+        changed = false;
+        set<State> newStates = closure;
+        for (State s : closure) {
+            if (transitions[s].count('e')) {
+                for (State next : transitions[s]['e']) {
+                    if (newStates.insert(next).second) {
+                        changed = true;
+                    }
+                }
+            }
+        }
+        closure = newStates;
+    } while (changed);
+    currentStates = closure;
+}
+bool simulateNFA(string input) {
+    set<State> currentStates = { q0 };
+    epsilonClosure(currentStates);
+
+    for (char c : input) {
+        set<State> nextStates;
+        for (State s : currentStates) {
+            if (transitions[s].count(c)) {
+                nextStates.insert(transitions[s][c].begin(), transitions[s][c].end());
+            }
+        }
+        currentStates = nextStates;
+        epsilonClosure(currentStates);
+    }
+    return currentStates.count(q4);
+}
+
+int main() {
+    string input;
+    cout << "Sir (a/b): ";
+    cin >> input;
+
+    if (simulateNFA(input)) {
+        cout << "aceptat!" << endl;
+    }
+    else {
+        cout << "sir gresit!" << endl;
+    }
+
+    return 0;
+}
